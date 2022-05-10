@@ -1,0 +1,129 @@
+﻿@using InkaWebSite.Models
+
+<div class="container text-center mt-5 ">
+    <div class="bookDateGradient">
+        <h3>Book Date</h3>
+    </div>
+
+    <hr />
+    <div class="col text-center">
+        @if (toShowPreviouseDate > 0)
+        {
+            <a class="calendarmarkers" @onclick="PreviouseMonth">@prevMonth</a>
+        }
+        <span class="myLogoText"> @calendar.CurrentMonth</span>
+        <a class="calendarmarkers" @onclick="NextMonth">@nextMonth</a>
+    </div>
+    <table class="table table-bordered border-light">
+
+        <thead>
+            <tr>
+                <th>@Days.Monday</th>
+                <th>@Days.Tuesday</th>
+                <th>@Days.Wednesday</th>
+                <th>@Days.Thursday</th>
+                <th>@Days.Friday</th>
+                <th>@Days.Saturday</th>
+                <th>@Days.Sunday</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @for (int j = MaximumAmountOfWeeksInMonth; j > 0; j--)
+            {
+                <tr>
+                    @for (; nullDaysCounter < startingDayOFMonth; nullDaysCounter++)
+                    {
+                        <th> @whiteSpace</th>
+                    }
+                    @if (nullDaysCounter == startingDayOFMonth && tableDevider == 0)
+                    {
+                        tableDevider = nullDaysCounter;
+                    }
+
+                    @while (dayCounter != totalDaysInMonth)
+                    {
+                        dayCounter++;
+                        <th> @dayCounter</th>
+                        tableDevider++;//тут баг при отходе назад
+                        if (tableDevider % 7 == 0)
+                            break;
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    Calendar calendar;
+    public char prevMonth = '<';
+    public char nextMonth = '>';
+    public int totalDaysInMonth;
+    public int MaximumAmountOfWeeksInMonth;
+    public int dayCounter;
+    public int startingDayOFMonth;
+    public string whiteSpace = " ";
+    public int nullDaysCounter = 0;
+    public int tableDevider;
+    public int toShowPreviouseDate = 0;
+
+    protected override void OnInitialized()
+    {
+        tableDevider = 0;
+        dayCounter = 0;
+        calendar = new();
+        totalDaysInMonth = calendar.CountTotalDayInMonth(calendar.CurrentYear, calendar.Month);
+        startingDayOFMonth = Calendar.DayOfFirstDateInTheMonth(calendar.CurrentYear, calendar.Month);
+        MaximumAmountOfWeeksInMonth = CountNumbersOfTables();
+    }
+    public void PreviouseMonth()
+    {
+        //MaximumAmountOfWeeksInMonth = 5;
+        tableDevider = 0;
+        nullDaysCounter = 0;
+        dayCounter = 0;
+        calendar.CurrentMonth -= 1;
+        calendar.Month -= 1;
+        if (calendar.Month == 0)
+        {
+            calendar.CurrentMonth = Months.December;
+            calendar.Month = 12;
+            calendar.CurrentYear -= 1;
+        }
+        totalDaysInMonth = calendar.CountTotalDayInMonth(calendar.CurrentYear, calendar.Month);
+        startingDayOFMonth = Calendar.DayOfFirstDateInTheMonth(calendar.CurrentYear, calendar.Month);
+        toShowPreviouseDate -= 1;
+        MaximumAmountOfWeeksInMonth = CountNumbersOfTables();
+        StateHasChanged();
+    }
+    public void NextMonth()
+    {
+        tableDevider = 0;
+        //MaximumAmountOfWeeksInMonth = 5;
+        nullDaysCounter = 0;
+        dayCounter = 0;
+        calendar.CurrentMonth += 1;
+        calendar.Month += 1;
+        if (calendar.Month > 12)
+        {
+            calendar.CurrentMonth = Months.January;
+            calendar.CurrentYear -= 1;
+            calendar.Month = 1;
+        }
+        totalDaysInMonth = calendar.CountTotalDayInMonth(calendar.CurrentYear, calendar.Month);
+        startingDayOFMonth = Calendar.DayOfFirstDateInTheMonth(calendar.CurrentYear, calendar.Month);
+        toShowPreviouseDate += 1;
+        MaximumAmountOfWeeksInMonth = CountNumbersOfTables();
+        StateHasChanged();
+    }
+    private int CountNumbersOfTables()
+    {
+
+        if (totalDaysInMonth + startingDayOFMonth > 35)
+            return 6;
+        else
+            return 5;
+    }
+    // нужно начинать отсчет с  текущего дня
+}
