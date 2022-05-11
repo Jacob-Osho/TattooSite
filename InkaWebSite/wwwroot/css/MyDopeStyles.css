@@ -51,3 +51,15 @@
         text-decoration: none;
         
     }
+.freeDates {
+    background-color: rgb(112, 205, 71);
+     cursor: pointer;
+}
+.bookedDates {
+    background-color: rgb(220, 55, 78);
+}
+.currentDate {
+    font-weight: bold;
+    font-size: 25px;
+    background-color: antiquewhite;
+}

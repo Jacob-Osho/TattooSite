@@ -44,8 +44,27 @@
                     @while (dayCounter != totalDaysInMonth)
                     {
                         dayCounter++;
-                        <th> @dayCounter</th>
-                        tableDevider++;//тут баг при отходе назад
+                        if (dayCounter == calendar.CurrentDate && toShowPreviouseDate == 0)
+                        {
+                            @*<th class="currentDate"> @dayCounter</th>*@
+                            <th class="currentDate"> @calendarCells.Find(x=>x.CurrentDate ==dayCounter ).CurrentDate</th>
+                        }
+                        else if (dayCounter < calendar.CurrentDate && toShowPreviouseDate == 0)
+                        {
+                           @* <th class="bookedDates"> @dayCounter</th>*@
+                             <th class="bookedDates"> @calendarCells.FirstOrDefault(x=>x.CurrentDate ==dayCounter ).CurrentDate</th>
+                        }
+                        else if (@calendarCells.FirstOrDefault(x=>x.CurrentDate ==dayCounter ).IsBooked)
+                        {
+                           @* <th class="bookedDates"> @dayCounter</th>*@
+                            <th class="bookedDates"> @calendarCells.FirstOrDefault(x=>x.CurrentDate ==dayCounter ).CurrentDate</th>
+                        }
+                        else
+                        {
+                            @*<th class="freeDates"> @dayCounter</th>*@
+                             <th class="freeDates"> @calendarCells.FirstOrDefault(x=>x.CurrentDate ==dayCounter ).CurrentDate</th>
+                        }
+                        tableDevider++;
                         if (tableDevider % 7 == 0)
                             break;
                     }
@@ -68,6 +87,7 @@
     public int tableDevider;
     public int toShowPreviouseDate = 0;
 
+    List<TableCell> calendarCells;
     protected override void OnInitialized()
     {
         tableDevider = 0;
@@ -76,6 +96,8 @@
         totalDaysInMonth = calendar.CountTotalDayInMonth(calendar.CurrentYear, calendar.Month);
         startingDayOFMonth = Calendar.DayOfFirstDateInTheMonth(calendar.CurrentYear, calendar.Month);
         MaximumAmountOfWeeksInMonth = CountNumbersOfTables();
+        calendarCells = FillTableCell(totalDaysInMonth, calendar.Month, calendar.CurrentYear);
+
     }
     public void PreviouseMonth()
     {
@@ -95,6 +117,8 @@
         startingDayOFMonth = Calendar.DayOfFirstDateInTheMonth(calendar.CurrentYear, calendar.Month);
         toShowPreviouseDate -= 1;
         MaximumAmountOfWeeksInMonth = CountNumbersOfTables();
+        calendarCells = new List<TableCell>();
+        calendarCells = FillTableCell(totalDaysInMonth, calendar.Month, calendar.CurrentYear);
         StateHasChanged();
     }
     public void NextMonth()
@@ -115,6 +139,8 @@
         startingDayOFMonth = Calendar.DayOfFirstDateInTheMonth(calendar.CurrentYear, calendar.Month);
         toShowPreviouseDate += 1;
         MaximumAmountOfWeeksInMonth = CountNumbersOfTables();
+        calendarCells = new List<TableCell>();
+        calendarCells = FillTableCell(totalDaysInMonth, calendar.Month, calendar.CurrentYear);
         StateHasChanged();
     }
     private int CountNumbersOfTables()
@@ -124,6 +150,40 @@
             return 6;
         else
             return 5;
+    }
+    private void DateReservation(TableCell currentCell)
+    {
+        TableCell updatedCell = new()
+            {
+                CurrentDate = currentCell.CurrentDate,
+                CurrentMonth = currentCell.CurrentMonth,
+                CurrentYear = currentCell.CurrentYear,
+                Description = currentCell.Description,
+                IsBooked = true
+            };
+        int index = calendarCells.FindIndex(x=>x.CurrentDate.Equals(currentCell.CurrentDate));
+        if (index != -1)
+            calendarCells[index] = updatedCell;
+        StateHasChanged();
+    }
+    private List<TableCell> FillTableCell(int daysInMonth,int currentMonth,int currentYear)
+    {
+        List<TableCell> temp = new();
+        for (var i = 1; i <= daysInMonth; i++)
+        {
+            TableCell tempCell = new TableCell
+                {
+                    CurrentDate = i,
+                    IsBooked = false,
+                    CurrentMonth = currentMonth,
+                    CurrentYear = currentYear,
+                    Description = null
+
+                };
+            temp.Add(tempCell);
+        }
+
+        return temp;
     }
     // нужно начинать отсчет с  текущего дня
 }

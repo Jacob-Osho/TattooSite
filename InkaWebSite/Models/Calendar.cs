@@ -10,6 +10,7 @@ namespace InkaWebSite.Models
 
         public DateTime TotalCurrentDate { get; set; } = DateTime.Now;
         public int CurrentYear { get; set; } = DateTime.Now.Year;
+        public int CurrentDate { get; set; } = DateTime.Now.Day;
 
 
 
@@ -19,27 +20,18 @@ namespace InkaWebSite.Models
         }
         public static int DayOfFirstDateInTheMonth(int year, int month, int day = 1)
         {
-            DateTime dateTime = new DateTime(year, month, day);
-            switch (dateTime.DayOfWeek)
+            DateTime dateTime = new(year, month, day);
+            return dateTime.DayOfWeek switch
             {
-                case DayOfWeek.Sunday:
-                    return 6;
-                case DayOfWeek.Monday:
-                    return 0;
-                case DayOfWeek.Tuesday:
-                    return 1;
-                case DayOfWeek.Wednesday:
-                    return 2;
-                case DayOfWeek.Thursday:
-                    return 3;
-                case DayOfWeek.Friday:
-                    return 4;
-                case DayOfWeek.Saturday:
-                    return 5;
-               
-                default:
-                    return 0;
-            }
+                DayOfWeek.Sunday => 6,
+                DayOfWeek.Monday => 0,
+                DayOfWeek.Tuesday => 1,
+                DayOfWeek.Wednesday => 2,
+                DayOfWeek.Thursday => 3,
+                DayOfWeek.Friday => 4,
+                DayOfWeek.Saturday => 5,
+                _ => 0,
+            };
         }
     }
 }
