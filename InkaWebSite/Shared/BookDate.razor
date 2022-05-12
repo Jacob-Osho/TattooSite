@@ -14,7 +14,7 @@
         <span class="myLogoText"> @calendar.CurrentMonth</span>
         <a class="calendarmarkers" @onclick="NextMonth">@nextMonth</a>
     </div>
-    <table class="table table-bordered border-light">
+    <table class="table table-bordered border-light ">
 
         <thead>
             <tr>
@@ -29,10 +29,26 @@
             </tr>
         </thead>
         <tbody>
+            @if (showPopUp ==true)
+            {
+                <BookDatePopUp @ref="bookDatePopUp" OnBookDate="OnConfirm" OnCancel="OnCancel" Title="@msg">
+                    <div>
+                        Are you sure whant to <span class="confirmationResrvation">Reservate</span> @confirmationDate  of @calendar.CurrentMonth ?
+                    </div>
+                </BookDatePopUp>
+            }
+            else
+            {
+                <BookDatePopUp @ref="bookDatePopUp" OnBookDate="OnConfirm" OnCancel="OnCancel" Title="@msg">
+                    <div>
+                        Are you sure whant to <span class="confirmationCancelation">Cancel</span> reservation on : @confirmationDate  of @calendar.CurrentMonth ?
+                    </div>
+                </BookDatePopUp>
+            }
             @for (int j = MaximumAmountOfWeeksInMonth; j > 0; j--)
             {
                 <tr>
-                    @for (; nullDaysCounter < startingDayOFMonth; nullDaysCounter++)
+                    @for (; nullDaysCounter < startingDayOFMonth; nullDaysCounter++)//NULL days counter pomen9tb na 0 v metode reserve date
                     {
                         <th> @whiteSpace</th>
                     }
@@ -51,28 +67,34 @@
                         }
                         else if (dayCounter < calendar.CurrentDate && toShowPreviouseDate == 0)
                         {
-                           @* <th class="bookedDates"> @dayCounter</th>*@
-                             <th class="bookedDates"> @calendarCells.FirstOrDefault(x=>x.CurrentDate ==dayCounter ).CurrentDate</th>
+                            @* <th class="bookedDates"> @dayCounter</th>*@
+                            <th class="unreachableDates"> @calendarCells.FirstOrDefault(x=>x.CurrentDate ==dayCounter ).CurrentDate</th>
                         }
-                        else if (@calendarCells.FirstOrDefault(x=>x.CurrentDate ==dayCounter ).IsBooked)
+                        else if (@calendarCells.FirstOrDefault(x => x.CurrentDate == dayCounter).IsBooked)
                         {
-                           @* <th class="bookedDates"> @dayCounter</th>*@
-                            <th class="bookedDates"> @calendarCells.FirstOrDefault(x=>x.CurrentDate ==dayCounter ).CurrentDate</th>
+                            var localDayCounter = dayCounter;
+                            @* <th class="bookedDates"> @dayCounter</th>*@
+                            <th class="bookedDates" @onclick="(()=> DateCancellation(localDayCounter))">  @calendarCells.FirstOrDefault(x=>x.CurrentDate ==localDayCounter ).CurrentDate</th>
+
                         }
                         else
                         {
+                            var localDayCounter = dayCounter;
                             @*<th class="freeDates"> @dayCounter</th>*@
-                             <th class="freeDates"> @calendarCells.FirstOrDefault(x=>x.CurrentDate ==dayCounter ).CurrentDate</th>
+                            <th class="freeDates" @onclick="(()=> DateReservation(localDayCounter))">  @calendarCells.FirstOrDefault(x=>x.CurrentDate ==localDayCounter ).CurrentDate</th>
                         }
                         tableDevider++;
                         if (tableDevider % 7 == 0)
                             break;
                     }
                 </tr>
+
             }
+
         </tbody>
     </table>
 </div>
+
 
 @code {
     Calendar calendar;
@@ -83,15 +105,18 @@
     public int dayCounter;
     public int startingDayOFMonth;
     public string whiteSpace = " ";
-    public int nullDaysCounter = 0;
+    public int nullDaysCounter;
     public int tableDevider;
     public int toShowPreviouseDate = 0;
-
+    BookDatePopUp bookDatePopUp;
+    public string msg = "Confirmation";
     List<TableCell> calendarCells;
+    public int confirmationDate;
+    private bool showPopUp;
     protected override void OnInitialized()
     {
-        tableDevider = 0;
-        dayCounter = 0;
+        showPopUp = true;
+        ResetCalendarCounters();
         calendar = new();
         totalDaysInMonth = calendar.CountTotalDayInMonth(calendar.CurrentYear, calendar.Month);
         startingDayOFMonth = Calendar.DayOfFirstDateInTheMonth(calendar.CurrentYear, calendar.Month);
@@ -101,10 +126,8 @@
     }
     public void PreviouseMonth()
     {
-        //MaximumAmountOfWeeksInMonth = 5;
-        tableDevider = 0;
-        nullDaysCounter = 0;
-        dayCounter = 0;
+
+        ResetCalendarCounters();
         calendar.CurrentMonth -= 1;
         calendar.Month -= 1;
         if (calendar.Month == 0)
@@ -123,10 +146,7 @@
     }
     public void NextMonth()
     {
-        tableDevider = 0;
-        //MaximumAmountOfWeeksInMonth = 5;
-        nullDaysCounter = 0;
-        dayCounter = 0;
+        ResetCalendarCounters();
         calendar.CurrentMonth += 1;
         calendar.Month += 1;
         if (calendar.Month > 12)
@@ -151,22 +171,24 @@
         else
             return 5;
     }
-    private void DateReservation(TableCell currentCell)
+    private void DateReservation(int date)
     {
-        TableCell updatedCell = new()
-            {
-                CurrentDate = currentCell.CurrentDate,
-                CurrentMonth = currentCell.CurrentMonth,
-                CurrentYear = currentCell.CurrentYear,
-                Description = currentCell.Description,
-                IsBooked = true
-            };
-        int index = calendarCells.FindIndex(x=>x.CurrentDate.Equals(currentCell.CurrentDate));
-        if (index != -1)
-            calendarCells[index] = updatedCell;
-        StateHasChanged();
+        showPopUp = true;
+        confirmationDate = date;
+           bookDatePopUp.Show();
+        ResetCalendarCounters();
+     
+
     }
-    private List<TableCell> FillTableCell(int daysInMonth,int currentMonth,int currentYear)
+    private void DateCancellation(int date)
+    {
+        showPopUp = false;
+        confirmationDate = date;
+         bookDatePopUp.Show();
+        ResetCalendarCounters();
+       
+    }
+    private List<TableCell> FillTableCell(int daysInMonth, int currentMonth, int currentYear)
     {
         List<TableCell> temp = new();
         for (var i = 1; i <= daysInMonth; i++)
@@ -178,12 +200,49 @@
                     CurrentMonth = currentMonth,
                     CurrentYear = currentYear,
                     Description = null
-
                 };
             temp.Add(tempCell);
         }
 
         return temp;
+    }
+    void OnConfirm()
+    {
+
+        TableCell currentCell = calendarCells.Find(x => x.CurrentDate == confirmationDate);
+
+        TableCell updatedCell = new()
+            {
+                CurrentDate = currentCell.CurrentDate,
+                CurrentMonth = currentCell.CurrentMonth,
+                CurrentYear = currentCell.CurrentYear,
+                Description = currentCell.Description,
+                IsBooked = !currentCell.IsBooked
+            };
+        int index = calendarCells.FindIndex(x => x.CurrentDate.Equals(currentCell.CurrentDate));
+        if (index != -1)
+            calendarCells[index] = updatedCell;
+        ResetCalendarCounters();
+        confirmationDate = 0;
+        bookDatePopUp.Hide();
+
+        StateHasChanged();
+
+
+    }
+    void OnCancel()
+    {
+        ResetCalendarCounters();
+        bookDatePopUp.Hide();
+
+
+    }
+    void ResetCalendarCounters()
+    {
+
+        tableDevider = 0;
+        nullDaysCounter = 0;
+        dayCounter = 0;
     }
     // нужно начинать отсчет с  текущего дня
 }
