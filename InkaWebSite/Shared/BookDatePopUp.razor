@@ -1,0 +1,40 @@
+﻿@if (_displaCofirmation)
+{
+    <div class="modal-backdrop show"></div>
+    <div class="modal fade show" id="exampleModel"
+     tabindex="-1" role="dialog" aria-labelledby="exampleModel" aria-hidden="true" style="display:block">
+
+        <div class="modal-dialog" role="document">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">@Title </h5>
+                     <button @onclick="OnCancel" type="button" class="close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                @ChildContent
+                </div>
+                <div class="modal-footer">
+
+                    <button @onclick="OnBookDate" type="button" class="btn btn-success">Confirm</button>
+                    <button @onclick="OnCancel" type="button" class="btn btn-danger">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    
+}
+
+@code {
+    private bool _displaCofirmation = false;
+    [Parameter] public string Title { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public EventCallback OnBookDate { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    public void Show() => _displaCofirmation = true;
+    public void Hide() => _displaCofirmation = false;
+
+}
