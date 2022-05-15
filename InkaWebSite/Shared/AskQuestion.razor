@@ -1,5 +1,63 @@
-﻿<h3>AskQuestion</h3>
+﻿
+<div class="container askQuestion">
+    <dvi class="text-center ">
+        <h3>Still have questions?</h3>
+        <h4> Contact me</h4>
+        <hr />
+        <div class="row">
+            <div class="col-4">
+                Name:
+                <p>  <input style="border-radius:5px ;font-weight:bold" @bind="@name" class="form-control-lg" type="text" /></p>
+            </div>
+            <div class="col-4">
+                Email:
+                <p>  <input style="border-radius:5px ;font-weight:bold" @bind="@email" class="form-control-lg" type="email" /></p>
+            </div>
+     @*      @if(!string.IsNullOrWhiteSpace(@name))
+            {
+                <div class="col-4">
+                Name is :@name Surname is:@surname  Email is :@email
+            </div>
+            }*@
+            
+            
 
+        </div>
+        <div class="row mt-4  ">
+            <div class="col-4">
+                Surname:
+                <p>  <input style="border-radius:5px ;font-weight:bold"@bind="@surname" class="form-control-lg" type="text" /></p>
+            </div>
+            <div class="col-4">
+                Question:
+                <p>  <input type="text" @bind="@msg" class="form-control-lg" style="border-radius:5px" /></p>
+            </div>
+  @*          @if(!string.IsNullOrWhiteSpace(@msg))
+            {
+                  <div class="col-4">
+                      Message : @msg
+                  </div>
+            }*@
+          
+
+        </div>
+        <div class="text-center mb-5">
+            <button @onclick="SendInfo" class="btn btn-info">Submit</button>
+        </div>
+    </dvi>
+</div>
 @code {
+    string name;
+    string surname;
+    string email;
+    string msg;
 
+    void SendInfo()
+    {
+        name = null;
+        surname = null;
+        email = null;
+        msg = null;
+        StateHasChanged();
+    }
 }

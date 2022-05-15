@@ -1,6 +1,6 @@
 ﻿@using InkaWebSite.Models
 
-<div class="container text-center mt-5 ">
+<div class="container text-center mt-5 mb-5 ">
     <div class="bookDateGradient">
         <h3>Book Date</h3>
     </div>
@@ -11,20 +11,20 @@
         {
             <a class="calendarmarkers" @onclick="PreviouseMonth">@prevMonth</a>
         }
-        <span class="myLogoText"> @calendar.CurrentMonth</span>
+        <span class="myLogoText" style="color:black">  @calendar.CurrentMonth</span>
         <a class="calendarmarkers" @onclick="NextMonth">@nextMonth</a>
     </div>
     <table class="table table-bordered border-light ">
 
         <thead>
             <tr>
-                <th>@Days.Monday</th>
-                <th>@Days.Tuesday</th>
-                <th>@Days.Wednesday</th>
-                <th>@Days.Thursday</th>
-                <th>@Days.Friday</th>
-                <th>@Days.Saturday</th>
-                <th>@Days.Sunday</th>
+                <th class="daysOfWeek">@Days.Monday</th>
+                <th class="daysOfWeek">@Days.Tuesday</th>
+                <th class="daysOfWeek">@Days.Wednesday</th>
+                <th class="daysOfWeek">@Days.Thursday</th>
+                <th class="daysOfWeek">@Days.Friday</th>
+                <th class="daysOfWeek">@Days.Saturday</th>
+                <th class="daysOfWeek">@Days.Sunday</th>
 
             </tr>
         </thead>
@@ -113,6 +113,7 @@
     List<TableCell> calendarCells;
     public int confirmationDate;
     private bool showPopUp;
+   
     protected override void OnInitialized()
     {
         showPopUp = true;
