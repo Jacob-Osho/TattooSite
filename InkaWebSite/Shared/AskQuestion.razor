@@ -13,6 +13,11 @@
                 Email:
                 <p>  <input style="border-radius:5px ;font-weight:bold" @bind="@email" class="form-control-lg" type="email" /></p>
             </div>
+              <div class="col-4">
+                Question:
+               
+                <p>   <textarea  @bind="@msg" class="form-control-lg" style="border-radius:5px"/></p>
+            </div>
      @*      @if(!string.IsNullOrWhiteSpace(@name))
             {
                 <div class="col-4">
@@ -28,10 +33,11 @@
                 Surname:
                 <p>  <input style="border-radius:5px ;font-weight:bold"@bind="@surname" class="form-control-lg" type="text" /></p>
             </div>
-            <div class="col-4">
+            @*<div class="col-4">
                 Question:
-                <p>  <input type="text" @bind="@msg" class="form-control-lg" style="border-radius:5px" /></p>
-            </div>
+               
+                <p>   <textarea  @bind="@msg" class="form-control-lg" style="border-radius:5px"/></p>
+            </div>*@
   @*          @if(!string.IsNullOrWhiteSpace(@msg))
             {
                   <div class="col-4">

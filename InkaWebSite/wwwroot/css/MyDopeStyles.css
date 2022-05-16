@@ -25,6 +25,7 @@
 }
 
 .recenter {
+
 }
 
 .bookDateGradient {
@@ -112,4 +113,23 @@
 .image {
     position: relative;
     width: 100%; /* for IE 6 */
+}
+.round {
+    border-radius: 100px; /* Радиус скругления */
+    border: 3px groove #775f58; /* Параметры рамки */
+    box-shadow: 0 0 7px #666; /* Параметры тени */
+}
+.miniGalery {
+    width: 200px;
+    height: 200px;
+    margin: 10px;
+ 
+}
+.miniGalery :hover
+{
+    color:gray;
+}
+.block {
+    background-image: url('img/images.jpg');
+    width:100%;
 }
